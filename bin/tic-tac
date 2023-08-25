@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+
+require 'vendor/autoload.php';
+
+use Rcsofttech85\TicTacToe\TicTacToeCommand;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+
+$application = new Application();
+
+$application->add(new TicTacToeCommand());
+
+$input = new ArrayInput(['tic-tac']);
+$application->run(input: $input);
