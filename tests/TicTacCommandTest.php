@@ -7,127 +7,82 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
 use Rcsofttech85\TicTacToe\TicTacToeCommand;
-use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 
 class TicTacCommandTest extends TestCase
 {
     private TicTacToeCommand $command;
 
+    private CommandTester $commandTester;
+
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->command = new TicTacToeCommand();
+
+        $application = new Application();
+
+        $application->add($this->command);
+
+        $this->commandTester = new CommandTester($this->command);
+
 
     }
 
     #[Test]
     #[DataProvider('checkWinDataProvider')]
     #[TestDox('$player is the winner')]
-    public function CheckWin(array $board, string $player)
+    public function CheckWin(array $entries, string $player)
     {
 
-        $result = $this->invokeMethod($this->command, 'checkWin', [$board, $player]);
-        $this->assertTrue($result);
+        $this->commandTester->setInputs($entries);
+        $this->commandTester->execute([]);
 
-    }
+        $output = $this->commandTester->getDisplay();
+        $this->assertStringContainsString("$player wins!", $output);
 
-    #[Test]
-    #[TestDox("test input value is assigned correctly")]
-    public function getUserMove()
-    {
-        $inputMock = $this->createMock(InputInterface::class);
-        $outputMock = $this->createMock(OutputInterface::class);
-        $questionHelperMock = $this->createMock(QuestionHelper::class);
-
-        $expectedInput = '1 1';
-        $questionHelperMock->expects($this->once())
-            ->method('ask')
-            ->willReturn($expectedInput);
-
-
-
-        $this->command->setHelperSet(new HelperSet(['question' => $questionHelperMock]));
-
-
-        $result = $this->invokeMethod($this->command, 'getUserMove', ['X', $inputMock, $outputMock]);
-
-        $expectedArray = ['row' => 1, 'col' => 1];
-
-        $this->assertTrue($result === $expectedArray);
     }
 
     public static function checkWinDataProvider(): array
     {
         return [
-            'row1' => [
-                [
-                    ['X', 'X', 'X'],
-                    ['', '', ''],
-                    ['', '', ''],
-                ], 'X'
+            'horizontal_win_1' => [
+
+                ['0 0', '0 1', '1 0', '1 1', '2 0'],
+                'X'
             ],
-            'row2' => [
-                [
-                    ['', '', ''],
-                    ['X', 'X', 'X'],
-                    ['', '', ''],
-                ], 'X'
+            'horizontal_win_2' => [
+
+                ['0 0', '1 0', '2 1', '1 1', '2 0', '1 2'],
+                'O'
             ],
-            'row3' => [
-                [
-                    ['', '', ''],
-                    ['', '', ''],
-                    ['X', 'X', 'X'],
-                ], 'X'
+            'horizontal_win_3' => [
+                ['2 0', '1 0', '2 1', '1 1', '2 2'],
+                'X'
             ],
-            'column1' => [
-                [
-                    ['X', '', ''],
-                    ['X', '', ''],
-                    ['X', '', ''],
-                ], 'X'
+            'column_win_1' => [
+                ['0 0', '0 1', '2 0', '1 1', '1 0'],
+                'X'
             ],
-            'column2' => [
-                [
-                    ['', 'X', ''],
-                    ['', 'X', ''],
-                    ['', 'X', ''],
-                ], 'X'
+            'column_win_2' => [
+                ['0 0', '0 1', '0 2 ', '1 1', '1 2', '2 1'],
+                'O'
             ],
-            'column3' => [
-                [
-                    ['', '', 'X'],
-                    ['', '', 'X'],
-                    ['', '', 'X'],
-                ], 'X'
+            'column_win_3' => [
+                ['0 2', '0 1', '1 2 ', '1 1', '2 2'],
+                'X'
             ],
-            'diagonal1' => [
-                [
-                    ['X', '', ''],
-                    ['', 'X', ''],
-                    ['', '', 'X'],
-                ], 'X'
+            'diagonal_win_1' => [
+                ['0 0', ' 0 1', '1 1', '1 0', '2 2'],
+                'X'
             ],
-            'diagonal2' => [
-                [
-                    ['', '', 'X'],
-                    ['', 'X', ''],
-                    ['X', '', ''],
-                ], 'X'
+            'diagonal_win_2' => [
+                ['0 2', ' 0 1', '1 1', '1 0', '2 0'],
+                'X'
             ]
         ];
     }
 
 
-    private function invokeMethod(object &$object, string $methodName, array $parameters = [])
-    {
-        $reflection = new \ReflectionClass($object::class);
-        $method = $reflection->getMethod($methodName);
-
-        return $method->invokeArgs($object, $parameters);
-    }
 }
