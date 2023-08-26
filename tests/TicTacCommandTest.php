@@ -12,22 +12,26 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class TicTacCommandTest extends TestCase
 {
-    private TicTacToeCommand $command;
-
-    private CommandTester $commandTester;
+    private CommandTester|null $commandTester;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->command = new TicTacToeCommand();
+        $command = new TicTacToeCommand();
 
         $application = new Application();
 
-        $application->add($this->command);
+        $application->add($command);
 
-        $this->commandTester = new CommandTester($this->command);
+        $this->commandTester = new CommandTester($command);
 
+    }
 
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        $this->commandTester = null;
     }
 
     #[Test]
@@ -43,6 +47,7 @@ class TicTacCommandTest extends TestCase
         $this->assertStringContainsString("$player wins!", $output);
 
     }
+
 
     public static function checkWinDataProvider(): array
     {
