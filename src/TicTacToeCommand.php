@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Play a game of Tic Tac Toe.
+ *
+ * @category Console_Application
+ * @package  Rcsofttech85\TicTacToe
+ * @author   Rahul Chavan <rcsofttech85@gmail.com>
+ * @license  @license https://opensource.org/licenses/MIT MIT License
+ * @since    2023-08-01
+ */
+
 namespace Rcsofttech85\TicTacToe;
 
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -19,6 +29,7 @@ class TicTacToeCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+
         $io = new SymfonyStyle($input, $output);
 
         $io->writeln(
@@ -57,6 +68,7 @@ class TicTacToeCommand extends Command
 
             $board[$move['row']][$move['col']] = $this->coloredPlayer($currentPlayer);
 
+
             if ($this->checkWin($board, $this->coloredPlayer($currentPlayer))) {
                 $this->displayBoard($board, $output);
                 $io->writeln("$currentPlayer wins!");
@@ -89,10 +101,12 @@ class TicTacToeCommand extends Command
         $question = "Player $currentPlayer's turn. Enter row (0-2) and column (0-2) separated by a space: ";
 
         $validation = Validation::createCallable(
-            new Regex([
-                'pattern' => '/^[0-2] [0-2]$/',
-                'message' => 'Enter row (0-2) and column (0-2) separated by a space'
-            ])
+            new Regex(
+                [
+                    'pattern' => '/^[0-2] [0-2]$/',
+                    'message' => 'Enter row (0-2) and column (0-2) separated by a space'
+                ]
+            )
         );
 
         $move = $helper->ask($input, $output, (new Question($question))->setValidator($validation));
@@ -106,34 +120,34 @@ class TicTacToeCommand extends Command
     {
         for ($i = 0; $i < 3; $i++) {
             if (
-                $board[$i][0] === $currentPlayer &&
-                $board[$i][1] === $currentPlayer &&
-                $board[$i][2] === $currentPlayer
+                $board[$i][0] === $currentPlayer
+                && $board[$i][1] === $currentPlayer
+                && $board[$i][2] === $currentPlayer
             ) {
                 return true; // Row win
             }
 
             if (
-                $board[0][$i] === $currentPlayer &&
-                $board[1][$i] === $currentPlayer &&
-                $board[2][$i] === $currentPlayer
+                $board[0][$i] === $currentPlayer
+                && $board[1][$i] === $currentPlayer
+                && $board[2][$i] === $currentPlayer
             ) {
                 return true;
             }
         }
 
         if (
-            $board[0][0] === $currentPlayer &&
-            $board[1][1] === $currentPlayer &&
-            $board[2][2] === $currentPlayer
+            $board[0][0] === $currentPlayer
+            && $board[1][1] === $currentPlayer
+            && $board[2][2] === $currentPlayer
         ) {
             return true;
         }
 
         if (
-            $board[0][2] === $currentPlayer &&
-            $board[1][1] === $currentPlayer &&
-            $board[2][0] === $currentPlayer
+            $board[0][2] === $currentPlayer
+            && $board[1][1] === $currentPlayer
+            && $board[2][0] === $currentPlayer
         ) {
             return true;
         }
@@ -154,13 +168,11 @@ class TicTacToeCommand extends Command
         return true;
     }
 
-    private function coloredPlayer(string $player):string{
-
-        return match($player){
+    private function coloredPlayer(string $player): string
+    {
+        return match ($player) {
             "X" => "\033[31m$player\033[0m",
             "O" => "\033[33m$player\033[0m"
         };
     }
-
-
 }
