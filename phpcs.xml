@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="PHP_CodeSniffer">
-    <description>Coding standard for a Laravel app.</description>
+    <description>Coding standard tic tac toe game.</description>
     <file>src</file>
     <file>tests</file>
 
